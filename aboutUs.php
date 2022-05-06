@@ -1,6 +1,6 @@
 <?php session_start()?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -88,7 +88,7 @@
                     <div class="col-lg-4">
                         <div class="team-member">
                             <div class="team-image">
-                                <img src="images/clients/prueba.png">
+                                <img src="images/clients/angel2.png">
                             </div>
                             <div class="team-desc">
                                 <h3>Ángel Criado</h3>
@@ -118,7 +118,7 @@
                     <div class="col-lg-4">
                         <div class="team-member">
                             <div class="team-image">
-                                <img src="images/clients/prueba.png">
+                                <img src="images/clients/sergio2.png">
                             </div>
                             <div class="team-desc">
                                 <h3>Sergio Jimenez</h3>
