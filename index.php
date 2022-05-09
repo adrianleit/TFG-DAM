@@ -194,7 +194,7 @@
                 <div id="portfolio" class="grid-layout portfolio-4-columns" data-margin="0">
                     <!-- portfolio item -->
                     <?php
-                    if ($conexion = mysqli_connect('127.0.0.1', 'root', '', 's05bd7e4_streetwear')) {
+                    if ($conexion = mysqli_connect('91.199.120.17', 's05bd7e4_streetwear', 'Adrian2001', 's05bd7e4_streetwear')) {
                         mysqli_set_charset($conexion, 'utf8');
                         $consulta = "SELECT nombre, id FROM productos ORDER BY RAND() LIMIT 8";
                         mysqli_query($conexion, $consulta);
@@ -265,6 +265,19 @@
     <script src="js/plugins.js"></script>
     <!--Template functions-->
     <script src="js/functions.js"></script>
+    <!-- Google Analytics -->
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7ZLN84B0M1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-7ZLN84B0M1');
+    </script>
 </body>
 
 </html>
