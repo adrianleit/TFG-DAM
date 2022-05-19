@@ -194,7 +194,7 @@
                 <div id="portfolio" class="grid-layout portfolio-4-columns" data-margin="0">
                     <!-- portfolio item -->
                     <?php
-                    if ($conexion = mysqli_connect('91.199.120.17', 's05bd7e4_streetwear', 'Adrian2001', 's05bd7e4_streetwear')) {
+                    if ($conexion = mysqli_connect('localhost:3306', 'root', '', 'mdlr')) {
                         mysqli_set_charset($conexion, 'utf8');
                         $consulta = "SELECT nombre, id FROM productos ORDER BY RAND() LIMIT 8";
                         mysqli_query($conexion, $consulta);
