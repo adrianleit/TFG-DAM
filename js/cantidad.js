@@ -21,7 +21,7 @@ function mas_carrito(id, talla) {
 }
 
 function menos_carrito(id, talla) {
-    if (document.getElementById('cantidad_'+id+'_'+talla).value > 0) {
+    if (document.getElementById('cantidad_'+id+'_'+talla).value > 1) {
         $('#cantidad_'+id+'_'+talla).val(Number($('#cantidad_'+id+'_'+talla).val()) - 1).change();
         var cantidad = $('#cantidad_'+id+'_'+talla).val();
         actualizar_carrito(id, talla, cantidad, "actualizar");
