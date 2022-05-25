@@ -29,7 +29,7 @@ session_start();
         <!-- SHOP CHECKOUT COMPLETED -->
         <section id="shop-checkout-completed">
 
-            <!-- Meter las transaciones a la bbdd -->
+
             <?php
             if (isset($_SESSION['id_usuario'])) {
                 $id_usuario = $_SESSION['id_usuario'];
@@ -42,6 +42,7 @@ session_start();
                 $region = '';
                 $precio_total = 0;
 
+                // Obtengo datos del usuario
                 if ($conexion = mysqli_connect('localhost:3306', 'root', '', 'mdlr')) {
                     mysqli_set_charset($conexion, 'utf8');
                     $consulta = "SELECT  lineaDireccion1,codigoPostal, ciudad, region  FROM usuarios WHERE id_usuario='$id_usuario';";
@@ -64,20 +65,19 @@ session_start();
                     }
                     mysqli_close($conexion);
                 }
-
             ?>
                 <?php
+                // Muestra el carrito visualmente
                 if (isset($_SESSION['carrito']) && $_SESSION['carrito'] > 0) {
                 ?>
-
-                    <div class="container">
-                        <div class="text-center">
+                    <section id="shop-cart">
+                        <div class="container" style="margin-bottom: 2rem;">
                             <div class="text-center">
-                                <h3>Su pedido se ha completado satisfactoriamente</h3>
+                                <div class="text-center">
+                                    <h3>Su pedido se ha completado satisfactoriamente</h3>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <section id="shop-cart">
                         <div class="container">
                             <div class="shop-cart">
                                 <div class="table table-sm table-striped table-responsive">
@@ -135,7 +135,8 @@ session_start();
                                                             </div>
                                                         </td>
                                                         <td class="cart-product-subtotal">
-                                                            <span class="amount" id="precio_total_<?php echo ($_SESSION['carrito'][$i][0] . "_" . $_SESSION['carrito'][$i][1]) ?>"><?php echo ($_SESSION['carrito'][$i][2] * $_SESSION['carrito'][$i][3]) ?>&euro;</span>
+                                                            <span class="amount" id="precio_total_<?php echo ($_SESSION['carrito'][$i][0] . "_" . $_SESSION['carrito'][$i][1]) ?>">
+                                                                <?php echo ($_SESSION['carrito'][$i][2] * $_SESSION['carrito'][$i][3]) ?>&euro;</span>
                                                         </td>
                                                     </tr>
                                             <?php
@@ -146,7 +147,7 @@ session_start();
                                     </table>
 
                                 </div>
-                                <!-- ------------------------------------------------------------- -->
+
                                 <div class="row">
                                     <div class="col-lg-6 p-r-10 ">
                                         <div class="table-responsive">
@@ -194,7 +195,6 @@ session_start();
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <!-- <a href="shop-checkout-completed.php" class="btn icon-left float-right"><span>Proceder a la Compra</span></a> -->
                                     </div>
                                     <div class="col-lg-6 p-r-10 ">
                                         <div class="table-responsive">
@@ -234,45 +234,75 @@ session_start();
                                 <div class="container">
                                     <div class="text-center">
                                         <div class="text-center">
-                                            <p>El pedido será enviado a la dirección de facturación que haya introducido en sus datos personales</p>
+                                            <p>El pedido será enviado a la dirección de facturación que aparece encima</p>
                                         </div>
                                         <a class="btn icon-left" href="index.php"><span>Volver a la tienda</span></a>
                                     </div>
                                 </div>
-                            <?php
-                        } else {
-                            echo("<script>window.location.href='index.php'</script>");
+                        <?php
+                        // Inserta las transaciones a la BBDD
+                        if ($conexion2 = mysqli_connect('localhost:3306', 'root', '', 'mdlr')) {
+                            mysqli_set_charset($conexion2, 'utf8');
+                            $consulta2 = "INSERT INTO `transacciones`(`id_usuario`, `cantidad_productos`, `direccion`, `comentario`) 
+                             VALUES ('$id_usuario', $cantidad_total_productos, '$direccion', '$comentario')";
+                            if (mysqli_query($conexion2, $consulta2)) {
+                            } else {
+                                echo ("Connection failed: " . mysqli_error($conexion2));
+                            }
+                            mysqli_close($conexion2);
                         }
-                            ?>
-                            <!-- ------------------------------------------------------------- -->
+
+                        // Necesito saber cual es el ultimo ID de Transacciones
+                        if ($conexion2 = mysqli_connect('localhost:3306', 'root', '', 'mdlr')) {
+                            mysqli_set_charset($conexion2, 'utf8');
+                            $consulta = "SELECT MAX(id) FROM transacciones";
+                            mysqli_query($conexion2, $consulta);
+                            if ($resultado = mysqli_query($conexion2, $consulta)) {
+                                while ($fila = mysqli_fetch_row($resultado)) {
+                                    $id_transaccion = $fila[0];
+                                }
+                            }
+                            mysqli_close($conexion2);
+                        }
+
+                        // $_SESSION['carrito'][][0] => Id
+                        // $_SESSION['carrito'][][1] => Talla
+                        // $_SESSION['carrito'][][2] => Cantidad
+                        // $_SESSION['carrito'][][3] => Precio (solo una unidad)
+                        // $_SESSION['carrito'][][4] => Marca
+                        // $_SESSION['carrito'][][5] => Parte de Ropa
+                        // $_SESSION['carrito'][][6] => Sexo
+                        // $_SESSION['carrito'][][7] => Nombre
+                        // $_SESSION['carrito'][][8] => Usuario
+
+                        // Meto cada producto a la tabla productos_transacciones
+                        for ($i = 0; $i < count($_SESSION['carrito']); $i++) {
+                            if ($_SESSION['carrito'][$i][8] == $_SESSION["id_usuario"]) {
+                                $id_producto_BBDD=$_SESSION['carrito'][$i][0];
+                                $cantidad_producto_BBDD=$_SESSION['carrito'][$i][2];
+                                $talla_producto_BBDD=$_SESSION['carrito'][$i][1];
+
+                                if ($conexion3 = mysqli_connect('localhost:3306', 'root', '', 'mdlr')) {
+                                    mysqli_set_charset($conexion3, 'utf8');
+                                    $consulta3 = "INSERT INTO productos_transacciones(`id_transaccion`, `id_producto`, `cantidad`, `talla`) 
+                                    VALUES ($id_transaccion,'$id_producto_BBDD', $cantidad_producto_BBDD, '$talla_producto_BBDD');";
+                                    if (mysqli_query($conexion3, $consulta3)) {
+                                    } else {
+                                        echo ("Connection failed: " . mysqli_error($conexion3));
+                                    }
+                                    mysqli_close($conexion3);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    echo ("<script>window.location.href='index.php'</script>");
+                }
+                        ?>
+                        <!-- ------------------------------------------------------------- -->
                             </div>
                         </div>
                     </section>
-
-                <?php
-
-                if ($conexion2 = mysqli_connect('localhost:3306', 'root', '', 'mdlr')) {
-                    mysqli_set_charset($conexion2, 'utf8');
-                    $consulta2 = "INSERT INTO `transacciones`(`id_usuario`, `cantidad_productos`, `direccion`, `comentario`) 
-                VALUES ('$id_usuario', $cantidad_total_productos, '$direccion', '$comentario')";
-                    if (mysqli_query($conexion2, $consulta2)) {
-                    } else {
-                        echo ("Connection failed: " . mysqli_error($conexion2));
-                    }
-                    mysqli_close($conexion2);
-                }
-
-                for ($i = 0; $i < count($_SESSION['carrito']); $i++) {
-                    if ($_SESSION['carrito'][$i][8] == $_SESSION["id_usuario"]) {
-                        
-                    }
-                }
-            }
-                ?>
-                <!--   -->
-
-
-
         </section>
         <!-- end: SHOP CHECKOUT COMPLETED -->
         <!-- DELIVERY INFO -->

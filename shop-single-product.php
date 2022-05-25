@@ -138,9 +138,6 @@
                                                     <input type="hidden" id="sexo" name="sexo" value="<?php echo ($sexo); ?>">
                                                     <input type="hidden" id="nombre" name="nombre" value="<?php echo ($nombre); ?>">
                                                     <button type="submit" class="btn" id="añadir"><i class="icon-shopping-cart"></i>&nbsp;Añadir al carrito</button>
-
-                                                    <!-- Mirar como meter las tallas -->
-                                                    <!-- <a class="btn" href="#"><i class="icon-shopping-cart"></i>&nbsp;Añadir al carrito</a> -->
                                                 </div>
                                             </div>
                                         </form>
