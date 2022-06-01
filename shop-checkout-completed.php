@@ -240,26 +240,16 @@ session_start();
                                     </div>
                                 </div>
                         <?php
-                        // Inserta las transaciones a la BBDD
-                        if ($conexion2 = mysqli_connect('localhost:3306', 'root', '', 'mdlr')) {
-                            mysqli_set_charset($conexion2, 'utf8');
-                            $consulta2 = "INSERT INTO `transacciones`(`id_usuario`, `cantidad_productos`, `direccion`, `comentario`) 
-                             VALUES ('$id_usuario', $cantidad_total_productos, '$direccion', '$comentario')";
-                            if (mysqli_query($conexion2, $consulta2)) {
-                            } else {
-                                echo ("Connection failed: " . mysqli_error($conexion2));
-                            }
-                            mysqli_close($conexion2);
-                        }
 
-                        // Necesito saber cual es el ultimo ID de Transacciones
+
+                        // Necesito saber cual es el ultimo ID de Pedidos
                         if ($conexion2 = mysqli_connect('localhost:3306', 'root', '', 'mdlr')) {
                             mysqli_set_charset($conexion2, 'utf8');
-                            $consulta = "SELECT MAX(id) FROM transacciones";
+                            $consulta = "SELECT MAX(id_pedido) FROM pedidos";
                             mysqli_query($conexion2, $consulta);
                             if ($resultado = mysqli_query($conexion2, $consulta)) {
                                 while ($fila = mysqli_fetch_row($resultado)) {
-                                    $id_transaccion = $fila[0];
+                                    $id_pedido = $fila[0];
                                 }
                             }
                             mysqli_close($conexion2);
@@ -278,14 +268,23 @@ session_start();
                         // Meto cada producto a la tabla productos_transacciones
                         for ($i = 0; $i < count($_SESSION['carrito']); $i++) {
                             if ($_SESSION['carrito'][$i][8] == $_SESSION["id_usuario"]) {
-                                $id_producto_BBDD=$_SESSION['carrito'][$i][0];
-                                $cantidad_producto_BBDD=$_SESSION['carrito'][$i][2];
-                                $talla_producto_BBDD=$_SESSION['carrito'][$i][1];
-
+                                //Cogo las variables del carrito que me interesan
+                                $id_producto_BBDD = $_SESSION['carrito'][$i][0];
+                                $cantidad_producto_BBDD = $_SESSION['carrito'][$i][2];
+                                $talla_producto_BBDD = $_SESSION['carrito'][$i][1];
+                                // Empieza la conexion
                                 if ($conexion3 = mysqli_connect('localhost:3306', 'root', '', 'mdlr')) {
                                     mysqli_set_charset($conexion3, 'utf8');
-                                    $consulta3 = "INSERT INTO productos_transacciones(`id_transaccion`, `id_producto`, `cantidad`, `talla`) 
-                                    VALUES ($id_transaccion,'$id_producto_BBDD', $cantidad_producto_BBDD, '$talla_producto_BBDD');";
+                                    if ($i == 0) {
+                                        // Si es el primer producto que le voy a agregar +1 al id_pedido para que no coincida con otros pedidos
+                                        $id_pedido+=1;
+                                        $consulta3 = "INSERT INTO pedidos (id_pedido, id_producto, id_usuario, cantidad, talla, direccion) 
+                                        VALUES ($id_pedido,'$id_producto_BBDD','$id_usuario',$cantidad_producto_BBDD,'$talla_producto_BBDD','$direccion');";
+                                    } else {
+                                        // Meto el resto de producto con el mismo id_pedido
+                                        $consulta3 = "INSERT INTO pedidos (id_pedido, id_producto, id_usuario, cantidad, talla, direccion) 
+                                        VALUES ($id_pedido,'$id_producto_BBDD','$id_usuario',$cantidad_producto_BBDD,'$talla_producto_BBDD','$direccion');";
+                                    }
                                     if (mysqli_query($conexion3, $consulta3)) {
                                     } else {
                                         echo ("Connection failed: " . mysqli_error($conexion3));
