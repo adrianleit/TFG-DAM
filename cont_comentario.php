@@ -30,7 +30,7 @@ function crear($producto, $usuario, $comentario)
 {
     // Create connection
     require("funcionConexion.php");
-    $conn = conexion("s05bd7e4_streetwear");
+    $conn = conexion("mdlr");
     // Check connection
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
